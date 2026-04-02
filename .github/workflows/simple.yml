@@ -5,7 +5,7 @@ jobs:
     runs-on: ibm-x86-64-small
     steps:
     - run: echo "this is using a small runner"
-  test-run-medium
+  test-run-medium:
 
     runs-on: ibm-x86-64-medium
     steps:
