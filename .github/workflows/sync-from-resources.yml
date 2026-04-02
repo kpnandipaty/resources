@@ -12,7 +12,7 @@ on:
 
 jobs:
   sync:
-    runs-on: ubuntu-latest
+    runs-on: ibm-x86-64-small
     
     # checkouts the grabber directory (grabber/ibm ghe repo)
     steps:
