@@ -1,4 +1,4 @@
-name: learn-github-actions
+name: simple
 on: [push]
 jobs:
   test-run-small:
