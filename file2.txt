@@ -5,3 +5,7 @@ cats
 dogs
 
 monkeys
+
+snake 
+
+tiger
