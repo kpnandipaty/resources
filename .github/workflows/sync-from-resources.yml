@@ -51,7 +51,7 @@ jobs:
       - name: merge changes from resources
         if: steps.check_diff.outputs.has_changes == 'true'
         run: |
-          git merge resources/main --allow-unrelated-histories --stratedgy-option=theirs --no-edit -m "sync changes from resources repo"
+          git merge resources/main --allow-unrelated-histories --strategy-option=theirs --no-edit -m "sync changes from resources repo"
       
       #pushes the branch to the remote repo on github (otel-sync-test)
       - name: push sync branch
