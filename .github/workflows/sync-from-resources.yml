@@ -2,13 +2,6 @@ name: Sync from Resources Repo
 
 on:
   workflow_dispatch:
-  schedule:
-    - cron: '0 * * * *'
-  push:
-    branches:
-      - main
-    paths-ignore:
-      - '.github/**'
 
 jobs:
   sync:
@@ -16,7 +9,7 @@ jobs:
     
     # checkouts the grabber directory (grabber/ibm ghe repo)
     steps:
-      - name: Checkout grabber repo
+      - name: checkout grabber repo
         uses: actions/checkout@v4
         with:
           token: ${{ secrets.GHE_PAT }}
@@ -28,43 +21,46 @@ jobs:
           git config user.name "github sync bot"
           git config user.email "syncbot@example.com"
       
-      
+      # adding the resources repo as a remote and fetching the main branch
       - name: add resources as remote
         run: |
           git remote add resources https://github.com/kpnandipaty/resources.git || true
           git fetch resources main
       
-      - name: Check for differences using git diff
+      # checking for differences between the current branch and the resources repo main branch
+      - name: check for differences
         id: check_diff
         run: |
-          echo "Comparing with resources/main..."
           
           if git diff --quiet HEAD resources/main; then
-            echo "No changes detected"
             echo "has_changes=false" >> $GITHUB_OUTPUT
           else
-            echo "Changes detected"
             echo "has_changes=true" >> $GITHUB_OUTPUT
           fi
       
-      - name: Create sync branch
+      # if there are changes create a new branch and checkout the branch
+      - name: create sync branch
         if: steps.check_diff.outputs.has_changes == 'true'
         run: |
           BRANCH_NAME="sync-${{ github.run_number }}"
           echo "BRANCH_NAME=$BRANCH_NAME" >> $GITHUB_ENV
           git checkout -b $BRANCH_NAME
       
-      - name: Merge changes from resources
+
+      #merges changes from the resources main into the branch that was created 
+      - name: merge changes from resources
         if: steps.check_diff.outputs.has_changes == 'true'
         run: |
           git merge resources/main --allow-unrelated-histories --no-edit -m "Sync changes from resources repo"
       
-      - name: Push sync branch
+      #pushes the branch to the remote repo on github (otel-sync-test)
+      - name: push sync branch
         if: steps.check_diff.outputs.has_changes == 'true'
         run: |
           git push origin $BRANCH_NAME
       
-      - name: Create Pull Request
+      #creates a pull request to merge the created branhc into main
+      - name: create pull request
         if: steps.check_diff.outputs.has_changes == 'true'
         env:
           GH_ENTERPRISE_TOKEN: ${{ secrets.GHE_PAT }}
@@ -72,7 +68,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GHE_PAT }}
         run: |
           gh pr create \
-            --title "Sync from resources repo" \
-            --body "This is a PR" \
+            --title "changes detected in the public repo. sync from resources repo" \
+            --body "this is a PR" \
             --base main \
             --head $BRANCH_NAME
