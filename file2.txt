@@ -1,0 +1,11 @@
+animals 
+
+cats
+
+dogs
+
+monkeys
+
+snake 
+
+tiger
