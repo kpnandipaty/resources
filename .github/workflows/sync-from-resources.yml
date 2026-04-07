@@ -34,32 +34,17 @@ jobs:
           git remote add resources https://github.com/kpnandipaty/resources.git || true
           git fetch resources main
       
-      # clones the resources repo into a temporary directory
-      - name: Clone resources repo for comparison
-        run: |
-          git clone --depth 1 --branch main https://github.com/kpnandipaty/resources.git /tmp/resources
-
-
-      - name: install rsync
-        run: |
-          sudo yum install -y rsync || sudo apt-get install -y rsync 
-      
-      #
-      - name: Check for differences using rsync
+      - name: Check for differences using git diff
         id: check_diff
         run: |
-          echo "Comparing files with rsync..."
-          RSYNC_OUTPUT=$(rsync -naic --delete \
-            --exclude='.git/' \
-            --exclude='.github/' \
-            /tmp/resources/ ./ 2>&1)
+          echo "Comparing with resources/main..."
           
-          if [ -z "$RSYNC_OUTPUT" ]; then
+          if git diff --quiet HEAD resources/main; then
+            echo "No changes detected"
             echo "has_changes=false" >> $GITHUB_OUTPUT
           else
-            echo "$RSYNC_OUTPUT"
+            echo "Changes detected"
             echo "has_changes=true" >> $GITHUB_OUTPUT
-            echo "$RSYNC_OUTPUT" > /tmp/rsync_changes.txt
           fi
       
       - name: Create sync branch
@@ -86,19 +71,8 @@ jobs:
           GH_HOST: github.ibm.com
           GITHUB_TOKEN: ${{ secrets.GHE_PAT }}
         run: |
-          PR_BODY="This PR syncs changes from https://github.com/kpnandipaty/resources
-
-          **Changes detected:** $(date)
-          
-          ## File Changes (detected by rsync)
-          \`\`\`
-          $(cat /tmp/rsync_changes.txt)
-          \`\`\`
-          
-          Please review the changes before merging."
-          
           gh pr create \
-            --title "Sync changes from resources repo (sync-${{ github.run_number }})" \
-            --body "$PR_BODY" \
+            --title "Sync from resources repo" \
+            --body "This is a PR" \
             --base main \
             --head $BRANCH_NAME
