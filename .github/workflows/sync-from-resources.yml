@@ -57,7 +57,7 @@ jobs:
       - name: Merge changes from resources
         if: steps.check_diff.outputs.has_changes == 'true'
         run: |
-          git merge resources/main --no-edit -m "Sync changes from resources repo"
+          git merge resources/main --allow-unrelated-histories --no-edit -m "Sync changes from resources repo"
       
       - name: Push sync branch
         if: steps.check_diff.outputs.has_changes == 'true'
