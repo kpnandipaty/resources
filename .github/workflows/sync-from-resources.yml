@@ -42,7 +42,7 @@ jobs:
 
       - name: install rsync
         run: |
-          sudo yum install -y rsync || sudo apt-get install -y rysnc 
+          sudo yum install -y rsync || sudo apt-get install -y rsync 
       
       #
       - name: Check for differences using rsync
