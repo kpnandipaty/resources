@@ -1,1 +1,1 @@
-this should  create a merge conflict
+this is an external change
