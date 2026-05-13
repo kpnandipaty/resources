@@ -1,4 +1,4 @@
-part 2 of external changes
+this line replaced should create a merge (resources)
 
 blah blah blah
 
